@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    container_name: discord-free-epic-games
+    platform: linux/arm64/v8
+    restart: always

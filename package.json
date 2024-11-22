@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.7.2"
+  },
+  "name": "discord-free-epic-games",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:dev": "tsc --watch",
+    "docker:build": "docker compose build",
+    "docker:publish": "docker push tclark78/discord-free-epic-games:latest",
+    "docker:pull": "docker pull tclark78/discord-free-epic-games:latest",
+    "start": "node dist/index.js",
+    "start:dev": "nodemon dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "the-aozora-one",
+  "license": "ISC",
+  "description": "",
+  "repository": {
+    "url": "https://github.com/the-aozora-one/Discord-Free-Epic-Games"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^22.9.1",
+    "nodemon": "^3.1.7"
+  }
+}
