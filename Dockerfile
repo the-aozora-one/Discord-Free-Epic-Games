@@ -11,10 +11,12 @@ COPY package*.json ./
 COPY .env.example ./.env
 COPY . .
 
-RUN chmod +x run.sh
-COPY Crontab /etc/cron.d/
-
-RUN npm i \
+RUN chmod +x run.sh \
+    crontab -l > temp-cron \
+    echo "15 10 * * * /home/node/app/run.sh" >> temp-cron \
+    crontab temp-cron \
+    rm temp-cron \
+    npm i \
     && npm run build
 
 CMD [ "cron", "&&", "tail", "-f", "/var/log/cron.log" ]

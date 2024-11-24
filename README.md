@@ -36,9 +36,11 @@ docker cp discord-free-epic-games:/home/node/app/.env. /host/path/to/file/discor
 docker cp /host/path/to/file/discord-free-epic-games.env discord-free-epic-games:/home/node/app/.env
 ```
 
-Start up your container
+Start up your container and add `run.sh` as a cronjob
 ```bash
 docker start discord-free-epic-games
+docker exec -it discord-free-epic-games /bin/bash
+crontab -e
 ```
 
 ## Building

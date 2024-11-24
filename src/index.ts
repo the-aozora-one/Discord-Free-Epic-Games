@@ -4,12 +4,14 @@ import * as fs from 'node:fs'
 import axios from 'axios'
 import { EpicGamesResponse, SearchStoreElement } from './@types/epic-games-response'
 import { AppData } from './@types/app-data'
+import logger from './utils/logger'
 
 dotenv.config({
     path: path.resolve('.env'),
 });
 
 (async function run() {
+    logger.info(`Searching for new free games...`)
     try {
         const freeGamesEndpoint: string = `https:/store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions`
 
@@ -23,34 +25,43 @@ dotenv.config({
         const embeds = []
         for (const game of games) {
             if (!appData.reported_game_ids.includes(game.id)) {
+                logger.debug(`${game.title} was already reported.`)
                 embeds.push(createEmbed(game))
             }
         }
 
         if (embeds.length === 0) {
             // There have been no new games since the last time we ran
+            logger.info(`No new games were found.`)
             return
         }
 
+        logger.info(`${embeds.length} new free games were found.`)
+
         const message = {
-            content: `Here are the newest free game promotions as of <t:${new Date().getTime()}:F>`,
+            content: `Here are the newest free game promotions as of <t:${Math.floor(new Date().getTime() / 1000)}:F>`, // Remove the milliseconds since Discord presumes this time is in seconds
             embeds: embeds,
             username: 'Free Epic Games',
             avatar_url: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.8CNEvCmi2hvOgM6BZFF7AgHaHa%26pid%3DApi&f=1&ipt=e2575e06928a768a5fc8181a81e9c3f0c0cb3789ddee2358b5582b812208b0ff&ipo=images',
         }
 
+        logger.debug(`Sending POST request to Discord webhook...`)
         axios.post(process.env.DISCORD_WEBHOOK, message, {
             headers: {
                 'Content-Type': 'application/json',
             }
         })
+        logger.debug(`POST request sent.`)
 
         appData.reported_game_ids = games.map((game) => {
             return game.id
         })
         fs.writeFileSync(path.resolve('storage/app-data.json'), JSON.stringify(appData))
+        logger.info(`Recording ${games.length} games as previously reported.`)
     } catch (error) {
-        console.error(`[ERROR]`, error)
+        logger.error(`[ERROR]`, error)
+    } finally {
+        logger.info(`Finished searching for free games!`)
     }
 })()
 
